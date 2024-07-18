@@ -1,109 +1,70 @@
-let currentSlide = 0;
-const slides = [];
+const width = 960;
+const height = 600;
 
-// Function to create scenes
-function createSlides(data) {
-    slides.push(() => {
-        // Slide 1: Overview of Confirmed Cases
-        const svg = d3.select("#visualization").html("").append("svg")
-            .attr("width", 800)
-            .attr("height", 600);
+const svg = d3.select("#map")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
-        // Your D3 code for slide 1
-        // Example: Bar chart for confirmed cases by state
-        const x = d3.scaleBand()
-            .range([0, 800])
-            .padding(0.1)
-            .domain(data.map(d => d.Province_State));
-        const y = d3.scaleLinear()
-            .range([600, 0])
-            .domain([0, d3.max(data, d => +d.Confirmed)]);
+const projection = d3.geoAlbersUsa()
+    .scale(1000)
+    .translate([width / 2, height / 2]);
 
-        svg.append("g")
-            .attr("transform", "translate(0,600)")
-            .call(d3.axisBottom(x))
-            .selectAll("text")
-            .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end");
+const path = d3.geoPath().projection(projection);
 
-        svg.append("g")
-            .call(d3.axisLeft(y));
+const colorScale = d3.scaleSequential(d3.interpolateReds)
+    .domain([0, 10000000]); // Adjust the domain based on your data range
 
-        svg.selectAll(".bar")
-            .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", d => x(d.Province_State))
-            .attr("y", d => y(+d.Confirmed))
-            .attr("width", x.bandwidth())
-            .attr("height", d => 600 - y(+d.Confirmed))
-            .attr("fill", "steelblue");
-    });
-
-    slides.push(() => {
-        // Slide 2: Overview of Deaths
-        const svg = d3.select("#visualization").html("").append("svg")
-            .attr("width", 800)
-            .attr("height", 600);
-
-        // Your D3 code for slide 2
-        // Example: Bar chart for deaths by state
-        const x = d3.scaleBand()
-            .range([0, 800])
-            .padding(0.1)
-            .domain(data.map(d => d.Province_State));
-        const y = d3.scaleLinear()
-            .range([600, 0])
-            .domain([0, d3.max(data, d => +d.Deaths)]);
-
-        svg.append("g")
-            .attr("transform", "translate(0,600)")
-            .call(d3.axisBottom(x))
-            .selectAll("text")
-            .attr("transform", "rotate(-45)")
-            .style("text-anchor", "end");
-
-        svg.append("g")
-            .call(d3.axisLeft(y));
-
-        svg.selectAll(".bar")
-            .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .attr("x", d => x(d.Province_State))
-            .attr("y", d => y(+d.Deaths))
-            .attr("width", x.bandwidth())
-            .attr("height", d => 600 - y(+d.Deaths))
-            .attr("fill", "red");
-    });
-
-    // Add more slides as needed
-}
-
-// Function to show slide
-function showSlide(index) {
-    if (index >= 0 && index < slides.length) {
-        slides[index]();
-    }
-}
-
-// Event listeners for navigation
-document.getElementById("prev").addEventListener("click", () => {
-    if (currentSlide > 0) {
-        currentSlide--;
-        showSlide(currentSlide);
-    }
-});
-
-document.getElementById("next").addEventListener("click", () => {
-    if (currentSlide < slides.length - 1) {
-        currentSlide++;
-        showSlide(currentSlide);
-    }
-});
-
-// Load the data and create slides
 d3.csv("merged_covid_data_proj.csv").then(data => {
-    createSlides(data);
-    showSlide(currentSlide);
+    const covidData = {};
+    data.forEach(d => {
+        covidData[d.Province_State] = +d.Confirmed;
+    });
+
+    d3.json("https://d3js.org/us-10m.v1.json").then(us => {
+        svg.append("g")
+            .selectAll("path")
+            .data(topojson.feature(us, us.objects.states).features)
+            .enter().append("path")
+            .attr("d", path)
+            .attr("fill", d => {
+                const stateName = d.properties.name;
+                const cases = covidData[stateName] || 0;
+                return colorScale(cases);
+            })
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5)
+            .on("mouseover", function(event, d) {
+                const stateName = d.properties.name;
+                const cases = covidData[stateName] || 0;
+                d3.select(this)
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 3);
+                showTooltip(event, `${stateName}: ${cases} cases`);
+            })
+            .on("mouseout", function() {
+                d3.select(this)
+                    .attr("stroke", "#fff")
+                    .attr("stroke-width", 1.5);
+                hideTooltip();
+            });
+    });
+
+    function showTooltip(event, text) {
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("position", "absolute")
+            .style("background", "white")
+            .style("border", "1px solid #ccc")
+            .style("padding", "10px")
+            .style("pointer-events", "none")
+            .text(text);
+
+        tooltip.style("left", (event.pageX + 5) + "px")
+            .style("top", (event.pageY - 28) + "px");
+    }
+
+    function hideTooltip() {
+        d3.select(".tooltip").remove();
+    }
 });
