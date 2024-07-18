@@ -15,7 +15,7 @@ const tooltip = d3.select("#tooltip");
 
 let covidData = {};
 
-d3.csv("merged_covid_data_proj.csv").then(data => {
+d3.csv("data.csv").then(data => {
   data.forEach(d => {
     const year = d.Date.split('-')[0];
     if (!covidData[year]) {
@@ -25,7 +25,6 @@ d3.csv("merged_covid_data_proj.csv").then(data => {
   });
 
   d3.json(stateURL).then(us => {
-    console.log(us);  // Check the structure of the loaded GeoJSON
     const states = us.features;
 
     const projection = d3.geoAlbersUsa()
