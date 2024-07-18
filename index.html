@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>COVID-19 USA Cases by State</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <title>COVID-19 Cases by State</title>
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <style>
+    .axis text {
+      font-size: 12px;
+    }
+    .bar {
+      fill: steelblue;
+    }
+    .label {
+      font-size: 10px;
+      text-anchor: middle;
+    }
+  </style>
 </head>
 <body>
-    <div id="container">
-        <h1>COVID-19 Cases in the USA by State</h1>
-        <label for="year-select">Select Year:</label>
-        <select id="year-select">
-            <option value="2020">2020</option>
-            <option value="2021">2021</option>
-            <option value="2022">2022</option>
-        </select>
-        <div id="chart"></div>
-        <div id="tooltip" class="tooltip"></div>
-    </div>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <script src="https://d3js.org/topojson.v1.min.js"></script>
-    <script src="script.js"></script>
+  <div>
+    <label for="year-select">Select Year:</label>
+    <select id="year-select">
+      <option value="2020">2020</option>
+      <option value="2021">2021</option>
+      <option value="2022">2022</option>
+    </select>
+  </div>
+  <div id="chart"></div>
+  <script src="script.js"></script>
 </body>
 </html>
-
