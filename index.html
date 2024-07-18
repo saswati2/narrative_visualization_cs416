@@ -1,32 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>COVID-19 Cases by State</title>
-  <script src="https://d3js.org/d3.v6.min.js"></script>
-  <style>
-    .axis text {
-      font-size: 12px;
-    }
-    .bar {
-      fill: steelblue;
-    }
-    .label {
-      font-size: 10px;
-      text-anchor: middle;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COVID-19 Cases Bar Chart</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <style>
+        .bar {
+            fill: steelblue;
+        }
+        .bar:hover {
+            fill: orange;
+        }
+        .axis-label {
+            font-size: 14px;
+        }
+        .axis path,
+        .axis line {
+            fill: none;
+            shape-rendering: crispEdges;
+        }
+    </style>
 </head>
 <body>
-  <div>
-    <label for="year-select">Select Year:</label>
-    <select id="year-select">
-      <option value="2020">2020</option>
-      <option value="2021">2021</option>
-      <option value="2022">2022</option>
-    </select>
-  </div>
-  <div id="chart"></div>
-  <script src="script.js"></script>
+    <div id="chart"></div>
+    <script src="script.js"></script>
 </body>
 </html>
