@@ -15,19 +15,21 @@ const path = d3.geoPath().projection(projection);
 const colorScale = d3.scaleSequential(d3.interpolateReds)
     .domain([0, 10000000]); // Adjust the domain based on your data range
 
-d3.csv("merged_covid_data_proj.csv").then(data => {
-    const covidData = {};
-    data.forEach(d => {
-        const year = d.Date.split('-')[0];
-        if (!covidData[year]) {
-            covidData[year] = {};
-        }
-        covidData[year][d.Province_State] = +d.Confirmed;
-    });
+// Load the US map data
+d3.json("https://d3js.org/us-10m.v1.json").then(us => {
+    const states = topojson.feature(us, us.objects.states).features;
 
-    d3.json("https://d3js.org/us-10m.v1.json").then(us => {
-        const states = topojson.feature(us, us.objects.states).features;
-        
+    // Load the COVID-19 data
+    d3.csv("data.csv").then(data => {
+        const covidData = {};
+        data.forEach(d => {
+            const year = d.Date.split('-')[0];
+            if (!covidData[year]) {
+                covidData[year] = {};
+            }
+            covidData[year][d.Province_State] = +d.Confirmed;
+        });
+
         // Function to update the map based on the selected year
         function updateMap(year) {
             svg.selectAll("path").remove();
