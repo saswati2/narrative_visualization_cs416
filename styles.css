@@ -12,3 +12,11 @@ body {
     width: 960px;
     height: 600px;
 }
+.tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    pointer-events: none;
+}
+
