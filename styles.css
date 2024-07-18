@@ -1,6 +1,7 @@
 body {
     font-family: Arial, sans-serif;
 }
+
 #container {
     display: flex;
     flex-direction: column;
@@ -8,10 +9,20 @@ body {
     justify-content: center;
     height: 100vh;
 }
-#map {
+
+#chart {
     width: 960px;
     height: 600px;
 }
+
+#tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    visibility: hidden;
+}
+
 .tooltip {
     position: absolute;
     background: white;
@@ -19,4 +30,3 @@ body {
     padding: 10px;
     pointer-events: none;
 }
-
