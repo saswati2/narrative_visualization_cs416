@@ -18,50 +18,64 @@ const colorScale = d3.scaleSequential(d3.interpolateReds)
 d3.csv("merged_covid_data_proj.csv").then(data => {
     const covidData = {};
     data.forEach(d => {
-        covidData[d.Province_State] = +d.Confirmed;
+        const year = d.Date.split('-')[0];
+        if (!covidData[year]) {
+            covidData[year] = {};
+        }
+        covidData[year][d.Province_State] = +d.Confirmed;
     });
 
     d3.json("https://d3js.org/us-10m.v1.json").then(us => {
-        svg.append("g")
-            .selectAll("path")
-            .data(topojson.feature(us, us.objects.states).features)
-            .enter().append("path")
-            .attr("d", path)
-            .attr("fill", d => {
-                const stateName = d.properties.name;
-                const cases = covidData[stateName] || 0;
-                return colorScale(cases);
-            })
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 1.5)
-            .on("mouseover", function(event, d) {
-                const stateName = d.properties.name;
-                const cases = covidData[stateName] || 0;
-                d3.select(this)
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 3);
-                showTooltip(event, `${stateName}: ${cases} cases`);
-            })
-            .on("mouseout", function() {
-                d3.select(this)
-                    .attr("stroke", "#fff")
-                    .attr("stroke-width", 1.5);
-                hideTooltip();
-            });
+        const states = topojson.feature(us, us.objects.states).features;
+        
+        // Function to update the map based on the selected year
+        function updateMap(year) {
+            svg.selectAll("path").remove();
+
+            svg.append("g")
+                .selectAll("path")
+                .data(states)
+                .enter().append("path")
+                .attr("d", path)
+                .attr("fill", d => {
+                    const stateName = d.properties.name;
+                    const cases = covidData[year][stateName] || 0;
+                    return colorScale(cases);
+                })
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1.5)
+                .on("mouseover", function(event, d) {
+                    const stateName = d.properties.name;
+                    const cases = covidData[year][stateName] || 0;
+                    d3.select(this)
+                        .attr("stroke", "black")
+                        .attr("stroke-width", 3);
+                    showTooltip(event, `${stateName}: ${cases} cases`);
+                })
+                .on("mouseout", function() {
+                    d3.select(this)
+                        .attr("stroke", "#fff")
+                        .attr("stroke-width", 1.5);
+                    hideTooltip();
+                });
+        }
+
+        // Initial map update
+        updateMap("2020");
+
+        // Event listener for the dropdown
+        d3.select("#year-select").on("change", function() {
+            const selectedYear = d3.select(this).property("value");
+            updateMap(selectedYear);
+        });
     });
 
     function showTooltip(event, text) {
         const tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
-            .style("position", "absolute")
-            .style("background", "white")
-            .style("border", "1px solid #ccc")
-            .style("padding", "10px")
-            .style("pointer-events", "none")
+            .style("left", (event.pageX + 5) + "px")
+            .style("top", (event.pageY - 28) + "px")
             .text(text);
-
-        tooltip.style("left", (event.pageX + 5) + "px")
-            .style("top", (event.pageY - 28) + "px");
     }
 
     function hideTooltip() {
