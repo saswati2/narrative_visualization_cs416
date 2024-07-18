@@ -1,4 +1,4 @@
-const width = 960;
+geconst width = 960;
 const height = 600;
 
 const svg = d3.select("#map")
@@ -20,7 +20,7 @@ d3.json("https://d3js.org/us-10m.v1.json").then(us => {
     const states = topojson.feature(us, us.objects.states).features;
 
     // Load the COVID-19 data
-    d3.csv("data.csv").then(data => {
+    d3.csv("merged_covid_data_proj.csv").then(data => {
         const covidData = {};
         data.forEach(d => {
             const year = d.Date.split('-')[0];
