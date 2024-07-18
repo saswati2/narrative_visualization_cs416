@@ -24,7 +24,7 @@ d3.csv("covid_data.csv").then(data => {
     });
 
     // Get the unique years
-    const years = Array.from(new Set(data.map(d => d.year)));
+    const years = [2020,2021,2022];
 
     // Create a dropdown menu for year selection
     d3.select("body").append("select")
