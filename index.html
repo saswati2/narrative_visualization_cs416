@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COVID-19 Cases Bar Chart</title>
+    <title>COVID-19 Data Visualization</title>
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <style>
         .bar {
@@ -12,17 +12,29 @@
         .bar:hover {
             fill: orange;
         }
-        .axis-label {
-            font-size: 14px;
-        }
-        .axis path,
-        .axis line {
-            fill: none;
+        .x-axis path,
+        .x-axis line,
+        .y-axis path,
+        .y-axis line {
             shape-rendering: crispEdges;
+        }
+        .x-axis text {
+            font-size: 12px;
+        }
+        .y-axis text {
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
+    <div>
+        <label for="year-select">Select Year:</label>
+        <select id="year-select">
+            <option value="2020">2020</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+        </select>
+    </div>
     <div id="chart"></div>
     <script src="script.js"></script>
 </body>
