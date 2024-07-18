@@ -1,4 +1,4 @@
-geconst width = 960;
+const width = 960;
 const height = 600;
 
 const svg = d3.select("#map")
@@ -17,10 +17,14 @@ const colorScale = d3.scaleSequential(d3.interpolateReds)
 
 // Load the US map data
 d3.json("https://d3js.org/us-10m.v1.json").then(us => {
+    console.log("US map data loaded:", us); // Debugging step
+
     const states = topojson.feature(us, us.objects.states).features;
 
     // Load the COVID-19 data
-    d3.csv("merged_covid_data_proj.csv").then(data => {
+    d3.csv("data.csv").then(data => {
+        console.log("COVID-19 data loaded:", data); // Debugging step
+
         const covidData = {};
         data.forEach(d => {
             const year = d.Date.split('-')[0];
@@ -29,6 +33,8 @@ d3.json("https://d3js.org/us-10m.v1.json").then(us => {
             }
             covidData[year][d.Province_State] = +d.Confirmed;
         });
+
+        console.log("Parsed COVID-19 data:", covidData); // Debugging step
 
         // Function to update the map based on the selected year
         function updateMap(year) {
