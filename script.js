@@ -41,6 +41,9 @@ d3.csv("data.csv").then(data => {
     function updateMap(year) {
       const yearData = covidData[year];
 
+      // Debugging: log the data to check
+      console.log("Year Data:", yearData);
+
       svg.selectAll("path")
          .data(states)
          .join("path")
@@ -49,6 +52,7 @@ d3.csv("data.csv").then(data => {
          .attr("fill", d => {
            const stateName = d.properties.name;
            const cases = yearData[stateName] || 0;
+           console.log(`State: ${stateName}, Cases: ${cases}`);  // Debugging: log each state's cases
            return colorScale(cases);
          })
          .on("mouseover", function(event, d) {
