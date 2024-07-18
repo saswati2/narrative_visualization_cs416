@@ -1,6 +1,7 @@
 // Set the dimensions of the SVG container
-const width = 960;
+
 const height = 600;
+const width = 960;
 
 // Create the SVG element
 const svg = d3.select("#map")
