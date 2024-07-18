@@ -13,19 +13,15 @@ const svg = d3.select("#chart")
 
 const tooltip = d3.select("#tooltip");
 
-let covidData;
+let covidData = {};
 
 d3.csv("merged_covid_data_proj.csv").then(data => {
-  covidData = {};
   data.forEach(d => {
     const year = d.Date.split('-')[0];
     if (!covidData[year]) {
       covidData[year] = {};
     }
-    if (!covidData[year][d.Province_State]) {
-      covidData[year][d.Province_State] = 0;
-    }
-    covidData[year][d.Province_State] += +d.Confirmed;
+    covidData[year][d.Province_State] = +d.Confirmed;
   });
 
   d3.json(stateURL).then(us => {
