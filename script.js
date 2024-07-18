@@ -10,68 +10,97 @@ const svg = d3.select("#chart")
   .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
+let data;  // Global variable to store data
+
 // Load the data
-d3.csv("covid_data.csv").then(data => {
+d3.csv("covid_data.csv").then(loadedData => {
     // Parse the data
-    data.forEach(d => {
+    data = loadedData.map(d => {
         d.Confirmed = +d.Confirmed;
         d.year = +d.year;
+        return d;
     });
 
-    // Create a list of unique states and years
-    const states = [...new Set(data.map(d => d.Province_State))];
-    const years = [...new Set(data.map(d => d.year))];
+    // Define the years to show in the dropdown
+    const years = [2020, 2021, 2022];
 
-    // Set up scales
-    const x0 = d3.scaleBand()
-        .domain(states)
-        .rangeRound([0, width])
-        .padding(0.1);
+    // Populate the dropdown with the specified years
+    const yearSelect = d3.select("#year-select");
+    yearSelect.selectAll("option")
+        .data(years)
+        .enter().append("option")
+        .attr("value", d => d)
+        .text(d => d);
 
-    const x1 = d3.scaleBand()
-        .domain(years)
-        .rangeRound([0, x0.bandwidth()])
-        .padding(0.05);
+    // Initial chart rendering for the first year
+    updateChart(years[0]);
 
-    const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.Confirmed)])
-        .nice()
-        .rangeRound([height, 0]);
+    // Handle dropdown change
+    yearSelect.on("change", function() {
+        updateChart(+this.value);
+    });
 
-    // Create axes
-    svg.append("g")
-        .selectAll("g")
-        .data(states)
-        .enter().append("g")
-        .attr("transform", d => `translate(${x0(d)},0)`)
-      .selectAll("rect")
-      .data(d => years.map(y => ({year: y, data: data.find(dd => dd.Province_State === d && dd.year === y)})))
-      .enter().append("rect")
-        .attr("x", d => x1(d.year))
-        .attr("y", d => y(d.data ? d.data.Confirmed : 0))
-        .attr("width", x1.bandwidth())
-        .attr("height", d => height - y(d.data ? d.data.Confirmed : 0))
-        .attr("class", "bar");
+    function updateChart(selectedYear) {
+        // Filter data for the selected year
+        const filteredData = data.filter(d => d.year === selectedYear);
 
-    svg.append("g")
-        .attr("class", "x-axis")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x0))
-      .append("text")
-        .attr("x", width)
-        .attr("y", margin.bottom - 10)
-        .attr("text-anchor", "end")
-        .attr("fill", "#000")
-        .text("State");
+        // Get unique states for the x-axis
+        const states = [...new Set(filteredData.map(d => d.Province_State))];
 
-    svg.append("g")
-        .attr("class", "y-axis")
-        .call(d3.axisLeft(y))
-      .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left)
-        .attr("dy", ".71em")
-        .attr("text-anchor", "end")
-        .attr("fill", "#000")
-        .text("Confirmed Cases");
+        // Create scales
+        const x0 = d3.scaleBand()
+            .domain(states)
+            .rangeRound([0, width])
+            .padding(0.1);
+
+        const x1 = d3.scaleBand()
+            .domain([selectedYear])
+            .rangeRound([0, x0.bandwidth()])
+            .padding(0.05);
+
+        const y = d3.scaleLinear()
+            .domain([0, d3.max(filteredData, d => d.Confirmed)])
+            .nice()
+            .rangeRound([height, 0]);
+
+        // Clear previous chart
+        svg.selectAll("*").remove();
+
+        // Draw bars
+        svg.selectAll("g")
+            .data(states)
+            .enter().append("g")
+            .attr("transform", d => `translate(${x0(d)},0)`)
+          .selectAll("rect")
+          .data(d => filteredData.filter(dd => dd.Province_State === d))
+          .enter().append("rect")
+            .attr("x", x1(selectedYear))
+            .attr("y", d => y(d.Confirmed))
+            .attr("width", x1.bandwidth())
+            .attr("height", d => height - y(d.Confirmed))
+            .attr("class", "bar");
+
+        // Add X and Y axes
+        svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", `translate(0,${height})`)
+            .call(d3.axisBottom(x0))
+          .append("text")
+            .attr("x", width)
+            .attr("y", margin.bottom - 10)
+            .attr("text-anchor", "end")
+            .attr("fill", "#000")
+            .text("State");
+
+        svg.append("g")
+            .attr("class", "y-axis")
+            .call(d3.axisLeft(y))
+          .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("y", -margin.left)
+            .attr("dy", ".71em")
+            .attr("text-anchor", "end")
+            .attr("fill", "#000")
+            .text("Confirmed Cases");
+    }
 });
