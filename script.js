@@ -25,7 +25,8 @@ d3.csv("merged_covid_data_proj.csv").then(data => {
   });
 
   d3.json(stateURL).then(us => {
-    const states = topojson.feature(us, us.objects.states).features;
+    console.log(us);  // Check the structure of the loaded GeoJSON
+    const states = us.features;
 
     const projection = d3.geoAlbersUsa()
                          .translate([width / 2, height / 2])
