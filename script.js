@@ -13,7 +13,7 @@ const svg = d3.select("#chart")
 let data;  // Global variable to store data
 
 // Load the data
-d3.csv("aggregated_covid_data.csv").then(loadedData => {
+d3.csv("covid_data.csv").then(loadedData => {
     // Parse the data
     data = loadedData.map(d => {
         d.Confirmed = +d.Confirmed;
