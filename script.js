@@ -1,95 +1,115 @@
-// Set up the SVG canvas dimensions
-const margin = {top: 30, right: 20, bottom: 70, left: 60},
-      width = 960 - margin.left - margin.right,
+// Set up the dimensions and margins of the graph
+const margin = {top: 20, right: 30, bottom: 50, left: 70},
+      width = 800 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
 
-const svg = d3.select("#chart")
-    .append("svg")
+// Append the svg object to the body of the page
+const svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-let data;  // Global variable to store data
+// Create a tooltip
+const tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
 
 // Load the data
-d3.csv("covid_data.csv").then(loadedData => {
-    // Parse the data
-    data = loadedData.map(d => {
+d3.csv("covid_data.csv").then(data => {
+    // Convert data to appropriate types
+    data.forEach(d => {
         d.Confirmed = +d.Confirmed;
         d.year = +d.year;
-        return d;
     });
 
-    // Initial chart rendering for the first year
-    updateChart(2020);
+    // Get the unique years
+    const years = Array.from(new Set(data.map(d => d.year)));
 
-    // Handle dropdown change
-    d3.select("#year-select").on("change", function() {
-        updateChart(+this.value);
-    });
+    // Create a dropdown menu for year selection
+    d3.select("body").append("select")
+        .attr("id", "yearSelect")
+        .selectAll("option")
+        .data(years)
+        .enter()
+        .append("option")
+        .attr("value", d => d)
+        .text(d => d);
 
-    function updateChart(selectedYear) {
-        // Filter data for the selected year
-        const filteredData = data.filter(d => d.year === selectedYear);
+    // Function to update the chart based on the selected year
+    function updateChart(year) {
+        // Filter data by the selected year
+        const filteredData = data.filter(d => d.year === +year);
 
-        // Get unique states for the x-axis
-        const states = [...new Set(filteredData.map(d => d.Province_State))];
-
-        // Create scales
-        const x0 = d3.scaleBand()
-            .domain(states)
-            .rangeRound([0, width])
+        // Set up scales
+        const x = d3.scaleBand()
+            .domain(filteredData.map(d => d.Province_State))
+            .range([0, width])
             .padding(0.1);
-
-        const x1 = d3.scaleBand()
-            .domain([selectedYear])
-            .rangeRound([0, x0.bandwidth()])
-            .padding(0.05);
 
         const y = d3.scaleLinear()
             .domain([0, d3.max(filteredData, d => d.Confirmed)])
             .nice()
-            .rangeRound([height, 0]);
+            .range([height, 0]);
 
-        // Clear previous chart
+        // Clear the previous chart
         svg.selectAll("*").remove();
 
-        // Draw bars
-        svg.selectAll("g")
-            .data(states)
-            .enter().append("g")
-            .attr("transform", d => `translate(${x0(d)},0)`)
-          .selectAll("rect")
-          .data(d => filteredData.filter(dd => dd.Province_State === d))
-          .enter().append("rect")
-            .attr("x", x1(selectedYear))
+        // Add bars
+        svg.selectAll("rect")
+            .data(filteredData)
+            .enter()
+            .append("rect")
+            .attr("x", d => x(d.Province_State))
             .attr("y", d => y(d.Confirmed))
-            .attr("width", x1.bandwidth())
+            .attr("width", x.bandwidth())
             .attr("height", d => height - y(d.Confirmed))
-            .attr("class", "bar");
+            .attr("fill", "steelblue")
+            .on("mouseover", function(event, d) {
+                tooltip.transition().duration(200).style("opacity", .9);
+                tooltip.html(`State: ${d.Province_State}<br>Confirmed: ${d.Confirmed}`)
+                    .style("left", (event.pageX + 5) + "px")
+                    .style("top", (event.pageY - 28) + "px");
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition().duration(500).style("opacity", 0);
+            });
 
-        // Add X and Y axes
+        // Add x-axis
         svg.append("g")
             .attr("class", "x-axis")
             .attr("transform", `translate(0,${height})`)
-            .call(d3.axisBottom(x0))
-          .append("text")
-            .attr("x", width)
-            .attr("y", margin.bottom - 10)
-            .attr("text-anchor", "end")
-            .attr("fill", "#000")
-            .text("State");
+            .call(d3.axisBottom(x))
+            .selectAll("text")
+            .attr("transform", "rotate(-45)")
+            .style("text-anchor", "end");
 
+        // Add y-axis
         svg.append("g")
             .attr("class", "y-axis")
-            .call(d3.axisLeft(y))
-          .append("text")
+            .call(d3.axisLeft(y));
+
+        // Add x-axis label
+        svg.append("text")
+            .attr("transform", `translate(${width / 2},${height + margin.bottom - 10})`)
+            .style("text-anchor", "middle")
+            .text("State");
+
+        // Add y-axis label
+        svg.append("text")
             .attr("transform", "rotate(-90)")
-            .attr("y", -margin.left)
-            .attr("dy", ".71em")
-            .attr("text-anchor", "end")
-            .attr("fill", "#000")
+            .attr("y", 0 - margin.left + 10)
+            .attr("x", 0 - (height / 2))
+            .style("text-anchor", "middle")
             .text("Confirmed Cases");
     }
+
+    // Initialize chart with the first year
+    updateChart(years[0]);
+
+    // Update chart when a new year is selected
+    d3.select("#yearSelect").on("change", function() {
+        const selectedYear = this.value;
+        updateChart(selectedYear);
+    });
 });
