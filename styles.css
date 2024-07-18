@@ -1,32 +1,35 @@
-body {
-    font-family: Arial, sans-serif;
+/* Styles for the SVG chart */
+svg {
+  font: 10px sans-serif;
+  margin: 20px;
 }
 
-#container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
+.bar {
+  fill: steelblue;
 }
 
-#chart {
-    width: 960px;
-    height: 600px;
+.bar:hover {
+  fill: orange;
 }
 
-#tooltip {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    visibility: hidden;
+.x-axis path,
+.y-axis path {
+  shape-rendering: crispEdges;
 }
 
+.x-axis text,
+.y-axis text {
+  font-size: 12px;
+}
+
+/* Tooltip styles */
 .tooltip {
-    position: absolute;
-    background: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    pointer-events: none;
+  position: absolute;
+  text-align: center;
+  padding: 5px;
+  font-size: 12px;
+  background: lightgrey;
+  border: 1px solid grey;
+  border-radius: 3px;
+  pointer-events: none;
 }
