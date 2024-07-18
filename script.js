@@ -13,7 +13,7 @@ const svg = d3.select("#chart")
 let data;  // Global variable to store data
 
 // Load the data
-d3.csv("covid_data.csv").then(loadedData => {
+d3.csv("aggregated_covid_data.csv").then(loadedData => {
     // Parse the data
     data = loadedData.map(d => {
         d.Confirmed = +d.Confirmed;
@@ -21,22 +21,11 @@ d3.csv("covid_data.csv").then(loadedData => {
         return d;
     });
 
-    // Define the years to show in the dropdown
-    const years = [2020, 2021, 2022];
-
-    // Populate the dropdown with the specified years
-    const yearSelect = d3.select("#year-select");
-    yearSelect.selectAll("option")
-        .data(years)
-        .enter().append("option")
-        .attr("value", d => d)
-        .text(d => d);
-
     // Initial chart rendering for the first year
-    updateChart(years[0]);
+    updateChart(2020);
 
     // Handle dropdown change
-    yearSelect.on("change", function() {
+    d3.select("#year-select").on("change", function() {
         updateChart(+this.value);
     });
 
