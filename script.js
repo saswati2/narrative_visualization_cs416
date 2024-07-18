@@ -22,7 +22,7 @@ d3.json("https://d3js.org/us-10m.v1.json").then(us => {
     const states = topojson.feature(us, us.objects.states).features;
 
     // Load the COVID-19 data
-    d3.csv("data.csv").then(data => {
+    d3.csv("merged_covid_data_proj.csv").then(data => {
         console.log("COVID-19 data loaded:", data); // Debugging step
 
         const covidData = {};
