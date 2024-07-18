@@ -11,7 +11,7 @@ const svg = d3.select("#chart")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
 // Load the data
-d3.csv("aggregated_covid_data.csv").then(data => {
+d3.csv("covid_data.csv").then(data => {
     // Parse the data
     data.forEach(d => {
         d.Confirmed = +d.Confirmed;
