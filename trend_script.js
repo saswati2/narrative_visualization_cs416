@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     .attr("class", "tooltip")
                     .style("opacity", 0);
 
-  d3.csv("detailed_covid_data.csv").then(data => {
+  d3.csv("data.csv").then(data => {
     data.forEach(d => {
       d.Date = parseDate(d.date_1);
       d.Confirmed = +d.Confirmed;
