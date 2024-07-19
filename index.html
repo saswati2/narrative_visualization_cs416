@@ -1,44 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COVID-19 Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-        .chart-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin-top: 20px;
-        }
-        svg {
-            border: 1px solid #ccc;
-        }
-        .tooltip {
-            position: absolute;
-            text-align: center;
-            padding: 5px;
-            font-size: 12px;
-            background: lightgrey;
-            border: 1px solid grey;
-            border-radius: 3px;
-            pointer-events: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>COVID-19 Bar Chart</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    .tooltip {
+      position: absolute;
+      text-align: center;
+      padding: 5px;
+      font-size: 12px;
+      background: lightgrey;
+      border: 1px solid grey;
+      border-radius: 3px;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-    <div class="chart-container">
-        <!-- The SVG will be appended here by script.js -->
-    </div>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="script.js"></script>
+  <div>
+    <label for="yearSelect">Select Year:</label>
+    <select id="yearSelect">
+      <option value="2020">2020</option>
+      <option value="2021">2021</option>
+      <option value="2022">2022</option>
+    </select>
+    <svg width="1000" height="500"></svg>
+  </div>
+  <a href="trend.html">Go to Trendline Chart</a>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
-
