@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>COVID-19 Trendline</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+    .tooltip {
+      position: absolute;
+      text-align: center;
+      padding: 5px;
+      font-size: 12px;
+      background: lightgrey;
+      border: 1px solid grey;
+      border-radius: 3px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <label for="stateSelect">Select State:</label>
+    <select id="stateSelect">
+      <!-- Options will be populated by script.js -->
+    </select>
+    <svg width="800" height="500"></svg>
+  </div>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="trend_script.js"></script>
+</body>
+</html>
